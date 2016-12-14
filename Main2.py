@@ -1,16 +1,21 @@
 import json
 import MySQLdb
 import time
+import sys
 
 db = ''
 start = time.time()
 try:
-    db = MySQLdb.connect(host="139.59.131.10",  # your host, usually localhost
+    db = MySQLdb.connect(host="localhost",  # your host, usually localhost
                          user="alex",           # your username
-                         passwd="hammy",        # your password
-                         db="reddit",use_unicode=True, charset="utf8")  # name of the data base
+                         passwd="abc123???",        # your password
+                         db="reddit",
+                         use_unicode=True,
+                         charset="utf8",
+                         autocommit=0)  # name of the data base
     print('Successfully connected to mysql.')
-except:
+except MySQLdb.Error as e:
+    print(e)
     print("I am unable to connect to the database")
 
 file_directory = "/home/oerlex/Downloads/data"
@@ -27,7 +32,7 @@ with open(file_directory, 'r') as f:
         print(counter)
         counter +=1
 
-        cursor.execute('insert into RedditConstraints (id, parent_id, link_id, name, author, body, subreddit_id, subreddit,'
+        cursor.execute('insert into reddit_whole (id, parent_id, link_id, name, author, body, subreddit_id, subreddit,'
                'score, created_utc) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                (data['id'], data['parent_id'], data['link_id'],
                 data['name'], data['author'], data['body'],
