@@ -23,8 +23,8 @@ class Main:
             print(e)
             print("Unable to connect to the database")
 
-    def clear(tableName,self):
-        self.cursor.execute('delete from %s',(tableName,))
+    def clear(self, tableName):
+        self.cursor.execute('delete from {}'.format(tableName))
         print("Table was flushed")
 
 
@@ -94,8 +94,7 @@ class Main:
                 ##Clubs
                 self.cursor.execute(
                     'insert ignore title(name, year, international_national, winner_club) values (%s,%s,%s,%s)',
-                    (data['name'], data['year'], data['international_national'],
-                     (data['winner_club'])))
+                    (data['name'], data['year'], data['international_national'], (data['winner_club'])))
 
             end = time.time()
         print("Time passed: {}".format(end - start))
@@ -107,17 +106,55 @@ class Main:
         self.cursor.close()
         self.db.commit()
         self.db.close()
-        print("The connection to the database has been close")
+        print("The connection to the database has been closed")
+
+    def getPlayersFromClub(self,clubName):
+        self.cursor.execute('SELECT * FROM player where current_club = "{}"'.format(clubName))
+        rows = self.cursor.fetchall()
+        for item in rows:
+            print(item)
+
+    def getChampionsLeagueWinnersFromLastThreeYears(self):
+        self.cursor.execute('SELECT year,winner_club FROM football_league.title where name = "{}" order by year desc LIMIT 3'.format("Champions League"))
+        rows = self.cursor.fetchall()
+        for item in rows:
+            print(item)
+
+
+    def getWinningClubWithMostGoals(self):
+        self.cursor.execute('SELECT t.winner_club, c.goals_scored FROM football_league.title as t, football_league.club as c '
+                            'order by c.goals_scored desc limit 1')
+        rows = self.cursor.fetchall()
+        for item in rows:
+            print(item)
+
+    def getHighestScoringPlayerFromLiverpool(self):
+        self.cursor.execute(
+            'SELECT name, goals_scored, current_club FROM football_league.player where current_club = "{}" order by goals_scored desc limit 1'.format("Liverpool"))
+        rows = self.cursor.fetchall()
+        for item in rows:
+            print(item)
+
+    def getClubsWithLeastLosses(self):
+        self.cursor.execute('SELECT * FROM football_league.club order by lost + draw asc limit 1')
+        rows = self.cursor.fetchall()
+        for item in rows:
+            print(item)
+
 
 a = Main()
 a.db = a.connectToDB('139.59.131.10','hatem','20Schnappi14','football_league')
 
 a.cursor = a.db.cursor()
-#a.clear('player')
-#a.clear('club')
-#a.clear('title')
-a.insertClubs()
-a.db.commit()
-a.insertPlayers()
-a.insertTitles()
+# a.clear('player')
+# a.clear('title')
+# a.clear('club')
+# a.insertClubs()
+# a.insertPlayers()
+# a.insertTitles()
+#a.getPlayersFromClub('Liverpool')
+#a.getChampionsLeagueWinnersFromLastThreeYears()
+#a.getWinningClubWithMostGoals()
+#a.getHighestScoringPlayerFromLiverpool()
+a.getClubsWithLeastLosses()
 a.closeConnection(a.cursor,a.db)
