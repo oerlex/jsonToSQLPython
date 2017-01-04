@@ -32,7 +32,7 @@ with open(file_directory, 'r') as f:
         print(counter)
         counter +=1
 
-        cursor.execute('insert into reddit_whole (id, parent_id, link_id, name, author, body, subreddit_id, subreddit,'
+        cursor.execute('insert into reddit3 (id, parent_id, link_id, name, author, body, subreddit_id, subreddit,'
                'score, created_utc) values (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)',
                (data['id'], data['parent_id'], data['link_id'],
                 data['name'], data['author'], data['body'],
